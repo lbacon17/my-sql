@@ -1,4 +1,5 @@
 import os
+import datetime
 import pymysql
 
 # get username from workspace
@@ -13,10 +14,13 @@ connection = pymysql.connect(host='localhost',
 try:
     # Run a query
     with connection.cursor() as cursor:
-        sql = "SELECT * FROM Artist;"
-        cursor.execute(sql)
-        result = cursor.fetchall
-        print(result)
+        list_of_names = ['Jim', 'Bob', 'Fred']
+        # prepare a string with the same number of placeholders 
+        # as in list of names
+        format_strings = ",".join(['%s']*len(list_of_names))
+        cursor.execute("DELETE FROM Friends WHERE name in ({});"
+                       .format(format_strings), list_of_names)
+        connection.commit()
 finally:
     # close connection, regardless of whether data pull successful or not
     connection.close()
